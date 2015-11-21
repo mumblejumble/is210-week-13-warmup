@@ -116,10 +116,35 @@ def get_market_density(filename):
 
 
 def correlate_data(c_open, j_open, output='output.txt'):
-    score_result = get_score_summary(f_file)
-    market_result = get_market_density(j_file)
+    """This function obtains data from files, creates a text file, and write
+    into new text file.
+
+    Args:
+        c_open(str): csv file to open
+        j_open(str): json file to open
+        output(str): defaults to output.txt
+
+    Returns:
+        a set of dictionary with borough names as keys and inspection score
+        and markets to restaurant percentage as tuple values.
+
+    Examples:
+        >>> correlate_data('inspection_results.csv', 'green_markets.json')
+        {'BRONX': (0.9762820512820514, 0.20512820512820512),
+        'BROOKLYN': (0.9745803357314141, 0.11510791366906475),
+        'STATEN ISLAND': (0.9804347826086955, 0.043478260869565216),
+        'MANHATTAN': (0.9771390374331531, 0.05213903743315508),
+        'QUEENS': (0.9719806763285017, 0.03864734299516908)}
+    """
+    score_result = get_score_summary(c_open)
+    market_result = get_market_density(j_open)
     cor_final = {}
-    for s_key, s_value in score_result.iteritems:
-        print s_key, s_value
-        for m_key, m_value in market_result.iteritems:
-            print m_key, m_value
+    for s_key in score_result:
+        for m_key in market_result:
+            if s_key == m_key:
+                cor_final[s_key] = (score_result[s_key][1],
+                                    market_result[m_key]/
+                                    float(score_result[s_key][0]))
+    fhandler = open(output, 'w')
+    json.dump(cor_final, fhandler)
+    fhandler.close()
